@@ -1,11 +1,27 @@
 import { FieldState } from "./field.js";
+import { Stage } from "./state.js";
 
 export function render(state) {
-  return renderTable(state.board);
+  return `
+    ${renderStage(state.stage)}
+    ${renderTable(state.board)}
+  `;
+}
+
+function renderStage(stage) {
+  return `
+    <span>
+      ${
+        stage === Stage.VICTORY 
+          ? `😎` 
+          : (stage === Stage.GAME_OVER ? `😭` : `🙂`)
+      }
+    </span>
+  `;
 }
 
 function renderTable(board) {
-  return `<table>${board.map(renderRow).join("")}</table>`;  
+  return `<table>${board.map(renderRow).join("")}</table>`; 
 }
 
 function renderRow(row) {
@@ -15,7 +31,13 @@ function renderRow(row) {
 function renderField(field) {
   if (field.state === FieldState.REVEALED) {
     return `
-      <td>${field.isMine ? `💣` : field.neighborCount}</td>
+      <td>
+        ${
+          field.isMine 
+            ? (field.isBlownUp ? `❌` : `💣`)
+            : (field.neighborCount > 0 ? field.neighborCount : ``)
+        }
+      </td>
     `;
   } else {
     return `
